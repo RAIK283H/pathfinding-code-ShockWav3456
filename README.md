@@ -1,1 +1,3 @@
 # Pathfinding Starter Code
+Random Pathing Algo:
+    The random pathing algorithm randomly picks any node adjacent to the current node with one restriction, it cannot pick the node it was previously on. If there is only one node adjacent, the restriction is ignored to avoid being unable to navigate out of a dead end. The restriction helps with reducting the total number of moves and number of potetial loops occuring (No bouncing back and forth between the same nodes). Aditionally, the player must arrive at the target node before being allowed to exit
