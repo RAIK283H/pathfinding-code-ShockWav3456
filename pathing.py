@@ -83,26 +83,38 @@ def get_random_path():
     #   else if v is explored, bidirectional/back edge
     #   else if v is visited, forward/cross edge
 
-def dfs_to_target(currentIndex, targetIndex, graph, visited):
-    if(visited is None):
-        visited = list()
-    
-    if(currentIndex == targetIndex):
+def dfs_to_target(objIndex, graph, stack):
+    assert(graph is not None), "Graph is None"
+    assert(objIndex >= 0 and objIndex < len(graph)), "Target index is not a valid index"
+    assert(stack is not None), "Stack cannot be None"
+    parent = [-1] * len(graph)
+    visited = list()
+    objIndexFound = False
+    currentIndex = -1
+    while(stack and not objIndexFound):
+        # (1): Pop Node
+        currentIndex = stack.pop()
+
+        # (2): if curr node not in visited, mark it visited
+        if(currentIndex not in visited):
+            visited.append(currentIndex)
+            if(currentIndex == objIndex):
+                objIndexFound = True
+            else:
+                for neighbor in graph[currentIndex][1]:
+                    if(neighbor not in visited):
+                        stack.append(neighbor)
+                        if(parent[neighbor] == -1):
+                            parent[neighbor] = currentIndex
+
+    if(objIndexFound):
         path = list()
-        path.append(currentIndex)
+        while(currentIndex != -1):
+            path.append(currentIndex)
+            currentIndex = parent[currentIndex]
+        path.reverse()
         return path
     
-    for neighbor in graph[currentIndex][1]:
-        if(neighbor not in visited):
-            visited.append(neighbor)
-            path = dfs_to_target(neighbor, targetIndex, graph, visited)
-            if(path is not None):
-                path.insert(0, currentIndex)
-                return path
-            visited.pop()
-
-
-
     return None
     
 
@@ -114,25 +126,42 @@ def get_dfs_path():
     assert (graph_data_file.graph_data[global_game_data.current_graph_index] is not None), "Graph_data at graph index cannot be None."
     graph = graph_data_file.graph_data[graphIndex]
 
+    #Intializing and declaring objective variables
     targetIndex = global_game_data.target_node[graphIndex]
     endIndex = len(graph) - 1
 
+    #Intializing and declaring variable for Path
     pathStartToEnd = list()
-    visitedIndexes = list()
-    visitedIndexes.append(0)
-    pathsToTarget = dfs_to_target(0, targetIndex, graph, visitedIndexes)
-    visitedIndexes.append(targetIndex)
-    pathTargetToEnd = dfs_to_target(targetIndex, endIndex, graph, visitedIndexes)
-    print("\n\nStart to Target:") 
-    if(pathsToTarget is not None):
-        for x in range(1, len(pathsToTarget)):
-            print(f"\n\tStart to Target added: {pathsToTarget[x]}")
-            pathStartToEnd.append(pathsToTarget[x])
-    print("\n\nTarget to End:")
-    if(pathTargetToEnd is not None):
-        for x in range(1, len(pathTargetToEnd)):
-            print(f"\n\tTarget to End added: {pathTargetToEnd[x]}")
-            pathStartToEnd.append(pathTargetToEnd[x])
+
+    #Start to Target DFS Path
+
+    #Intializing Stack for Start to Target DFS
+    stack = [0]
+    pathsToTarget = dfs_to_target(targetIndex, graph, stack)
+    
+    
+
+    #Transferring path into one path
+    assert(pathsToTarget is not None), "Path from start to target is None"
+    assert (len(pathsToTarget) > 0), "Path from start to target cannot be empty."
+    for x in range(1, len(pathsToTarget)):
+        pathStartToEnd.append(pathsToTarget[x])
+
+
+    #Target To End
+
+    #Intializing Stack for Target to End DFS
+    stack.clear
+    stack = [targetIndex]
+
+    #Target to End DFS Path
+    pathTargetToEnd = dfs_to_target(endIndex, graph, stack)
+
+    #Transferring the pathTargetToEnd to pathStartToEnd
+    assert(pathTargetToEnd is not None), "Path from target to end is None"
+    assert (len(pathTargetToEnd) > 0), "Path from target to end cannot be empty."
+    for x in range(1, len(pathTargetToEnd)):
+        pathStartToEnd.append(pathTargetToEnd[x])
  
 
 
