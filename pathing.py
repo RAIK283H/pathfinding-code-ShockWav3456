@@ -101,8 +101,10 @@ def dfs_to_target(objIndex, graph, stack):
             if(currentIndex == objIndex):
                 objIndexFound = True
             else:
+                # (3): Update unvisited neighbors
                 for neighbor in graph[currentIndex][1]:
                     if(neighbor not in visited):
+                        # (4): Push unvisited neighbors to stack
                         stack.append(neighbor)
                         if(parent[neighbor] == -1):
                             parent[neighbor] = currentIndex
