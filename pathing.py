@@ -24,72 +24,122 @@ def get_test_path():
 
 
 def get_random_path():
-    #print("\nRandom has activated")
     assert (global_game_data.current_graph_index is not None), "Current graph index cannot be None."
     assert (graph_data_file.graph_data is not None), "Graph_data cannot be None."
     graphIndex = global_game_data.current_graph_index
-    assert (graph_data_file.graph_data[graphIndex] is not None), "Graph_data at graph index cannot be None."
-    
+    assert (graph_data_file.graph_data[global_game_data.current_graph_index] is not None), "Graph_data at graph index cannot be None."
+    graph = graph_data_file.graph_data[graphIndex]
     lastIndex = 0
     currentIndex = 0
     nextIndex = -1
 
     targetIndex = global_game_data.target_node[graphIndex]
-    endIndex = len(graph_data_file.graph_data[graphIndex]) - 1
+    endIndex = len(graph) - 1
 
     reachedTarget = False
     reachedEnd = False
 
     path = list()
-    while(not reachedTarget and not reachedEnd): #):#
-        #print("\nTriggered loop main")
-        #Run path search
+    while(not reachedTarget and not reachedEnd):
         while(not reachedTarget):
             if(currentIndex == targetIndex):
                 reachedTarget = True
-                #print("\n Trigger Reached target path")
             else:
-                numberOfAdjacentSpaces = len(graph_data_file.graph_data[graphIndex][currentIndex][1])
+                numberOfAdjacentSpaces = len(graph[currentIndex][1])
 
-                nextIndex = graph_data_file.graph_data[graphIndex][currentIndex][1][random.randint(0, numberOfAdjacentSpaces)]
+                nextIndex = graph[currentIndex][1][random.randint(0, numberOfAdjacentSpaces)]
 
                 if(numberOfAdjacentSpaces != 1):
-                    #print("\nTarget inner while")
                     while(lastIndex == nextIndex or currentIndex == nextIndex):
-                        nextIndex = graph_data_file.graph_data[graphIndex][currentIndex][1][random.randint(0, numberOfAdjacentSpaces)]
-
-                #print(f"\nLast Last Index = {lastlastIndex} | Last Index = {lastIndex} | Current Index = {currentIndex} | Next Index = {nextIndex} | Evaluation of while left = {lastlastIndex == currentIndex} | Evaluation of while right = {lastIndex == currentIndex} |Evaluation of while = {lastlastIndex == currentIndex and lastIndex == currentIndex}  | Number of Adjacent = {numberOfAdjacentSpaces} | Adjacent Space eval = {numberOfAdjacentSpaces != 1}\n")
+                        nextIndex = graph[currentIndex][1][random.randint(0, numberOfAdjacentSpaces)]
+                
                 lastIndex = currentIndex
                 currentIndex = nextIndex
                 path.append(currentIndex)
-                #print("\nTarget end")
-        #print("\n Triggered Reach end loop")
+
         while(not reachedEnd):
             if(currentIndex == endIndex):
                 reachedEnd = True
-                #print("\n Trigger Reached end path")
             else:
-                numberOfAdjacentSpaces = len(graph_data_file.graph_data[graphIndex][currentIndex][1])
+                numberOfAdjacentSpaces = len(graph[currentIndex][1])
 
-                nextIndex = graph_data_file.graph_data[graphIndex][currentIndex][1][random.randint(0, numberOfAdjacentSpaces)]
+                nextIndex = graph[currentIndex][1][random.randint(0, numberOfAdjacentSpaces)]
 
                 if(numberOfAdjacentSpaces != 1):
-                    #print("\nTarget end while")
                     while(lastIndex == nextIndex or currentIndex == nextIndex):
-                        nextIndex = graph_data_file.graph_data[graphIndex][currentIndex][1][random.randint(0, numberOfAdjacentSpaces)]
-
-                #print(f"\nLast Last Index = {lastlastIndex} | Last Index = {lastIndex} | Current Index = {currentIndex} | Next Index = {nextIndex} | Evaluation of while left = {lastlastIndex == currentIndex} | Evaluation of while right = {lastIndex == currentIndex} |Evaluation of while = {lastlastIndex == currentIndex and lastIndex == currentIndex}  | Number of Adjacent = {numberOfAdjacentSpaces} | Adjacent Space eval = {numberOfAdjacentSpaces != 1}\n")
+                        nextIndex = graph[currentIndex][1][random.randint(0, numberOfAdjacentSpaces)]
+                
                 lastIndex = currentIndex
                 currentIndex = nextIndex
                 path.append(currentIndex)
-                #print("\End end")
     assert (path is not None), "Path cannot be None."
     assert (len(path) > 0), "Path cannot be empty."
     return path
     return [1,2]
 
+#DFS(u)
+    #for each neighbor v of u
+    #   if v is unvisited, tree edge, DFS(v)
+    #   else if v is explored, bidirectional/back edge
+    #   else if v is visited, forward/cross edge
+
+def dfs_to_target(currentIndex, targetIndex, graph, visited):
+    if(visited is None):
+        visited = list()
+    
+    if(currentIndex == targetIndex):
+        path = list()
+        path.append(currentIndex)
+        return path
+    
+    for neighbor in graph[currentIndex][1]:
+        if(neighbor not in visited):
+            visited.append(neighbor)
+            path = dfs_to_target(neighbor, targetIndex, graph, visited)
+            if(path is not None):
+                path.insert(0, currentIndex)
+                return path
+            visited.pop()
+
+
+
+    return None
+    
 
 def get_dfs_path():
+    #print("\DFS has activated")
+    assert (global_game_data.current_graph_index is not None), "Current graph index cannot be None."
+    assert (graph_data_file.graph_data is not None), "Graph_data cannot be None."
+    graphIndex = global_game_data.current_graph_index
+    assert (graph_data_file.graph_data[global_game_data.current_graph_index] is not None), "Graph_data at graph index cannot be None."
+    graph = graph_data_file.graph_data[graphIndex]
+
+    targetIndex = global_game_data.target_node[graphIndex]
+    endIndex = len(graph) - 1
+
+    pathStartToEnd = list()
+    visitedIndexes = list()
+    visitedIndexes.append(0)
+    pathsToTarget = dfs_to_target(0, targetIndex, graph, visitedIndexes)
+    visitedIndexes.append(targetIndex)
+    pathTargetToEnd = dfs_to_target(targetIndex, endIndex, graph, visitedIndexes)
+    print("\n\nStart to Target:") 
+    if(pathsToTarget is not None):
+        for x in range(1, len(pathsToTarget)):
+            print(f"\n\tStart to Target added: {pathsToTarget[x]}")
+            pathStartToEnd.append(pathsToTarget[x])
+    print("\n\nTarget to End:")
+    if(pathTargetToEnd is not None):
+        for x in range(1, len(pathTargetToEnd)):
+            print(f"\n\tTarget to End added: {pathTargetToEnd[x]}")
+            pathStartToEnd.append(pathTargetToEnd[x])
+ 
+
+
+
+    assert (pathStartToEnd is not None), "Path cannot be None."
+    assert (len(pathStartToEnd) > 0), "Path cannot be empty."
+    return pathStartToEnd
     return [1,2]
 
 
