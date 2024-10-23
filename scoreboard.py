@@ -12,6 +12,7 @@ class Scoreboard:
     player_excess_distance_display = []
     player_unique_nodes_visited_display = []
     player_path_display = []
+    winnerCalculated = False
 
     def __init__(self, batch, group):
         self.batch = batch
@@ -24,6 +25,9 @@ class Scoreboard:
         self.distance_to_exit_label = pyglet.text.Label('Direct Distance To Exit : 0', x=0, y=0,
                                                         font_name='Arial', font_size=self.font_size, batch=batch, group=group)
         self.distance_to_exit = 0
+        self.winner_label = pyglet.text.Label('Winner: ', x=0, y=0,
+                                                        font_name='Arial', font_size=self.font_size, batch=batch, group=group)
+        self.winner = 0
         for index, player in enumerate(config_data.player_data):
             player_name_label = pyglet.text.Label(str(index + 1) + " " + player[0],
                                                   x=0,
@@ -61,6 +65,7 @@ class Scoreboard:
                                    font_size=self.font_size, batch=batch, group=group, color=player[2][colors.TEXT_INDEX])
             self.player_path_display.append(
                 (path_label, player))
+            
 
     def update_elements_locations(self):
         self.distance_to_exit_label.x = config_data.window_width - self.stat_width
@@ -85,14 +90,6 @@ class Scoreboard:
         
         for index in range(len(config_data.player_data)):
             self.player_path_display[index][0].text = self.wrap_text(str(global_game_data.graph_paths[index]))
-        
-        #'''
-        for index in range(len(config_data.player_data)):
-            nodesVisited = 0
-            path = global_game_data.graph_paths[index]
-            nodesVisited = len(set(path))
-            self.player_unique_nodes_visited_display[index][0].text = self.wrap_text(f"Number of unique nodes: {nodesVisited}")
-        #'''
 
 
     def update_distance_to_exit(self):
@@ -102,6 +99,14 @@ class Scoreboard:
         end_y = graph_data.graph_data[global_game_data.current_graph_index][-1][0][1]
         self.distance_to_exit = math.sqrt(pow(start_x - end_x, 2) + pow(start_y - end_y, 2))
         self.distance_to_exit_label.text = 'Direct Distance To Exit : ' + "{0:.0f}".format(self.distance_to_exit)
+
+        #'''
+        for index in range(len(config_data.player_data)):
+            nodesVisited = 0
+            path = global_game_data.graph_paths[index]
+            nodesVisited = len(set(path))
+            self.player_unique_nodes_visited_display[index][0].text = self.wrap_text(f"Number of Unique Nodes Visited: {nodesVisited}")
+        #'''
 
     def wrap_text(self, input):
         wrapped_text = (input[:44] + ', ...]') if len(input) > 44 else input
@@ -118,8 +123,36 @@ class Scoreboard:
                 if player_object.player_config_data == player_configuration_info:
                     display_element.text = "Excess Distance Traveled: " + str(max(0, int(player_object.distance_traveled-self.distance_to_exit)))
 
+    def update_winner(self):
+        self.winner_label.x = config_data.window_width - self.stat_width
+        self.winner_label.y = config_data.window_height - self.stat_height * 24
+        graph = graph_data.graph_data[global_game_data.current_graph_index]
+        targetIndex = global_game_data.target_node[global_game_data.current_graph_index]
+        shortestpath = pow(2,30)
+        shortIndex = -1
+        x = -1
+        for player in global_game_data.player_objects:
+            x = x+1
+            path = global_game_data.graph_paths[x]
+            #print(f"\nPath for index {x}: {path}")
+            distance = player.distance_traveled
+            if(targetIndex in path):
+                if((len(graph) - 1) in path):
+                    if(distance < shortestpath):
+                        shortIndex = x
+                        shortestpath = distance
+        if(len(self.winner_label.text) == len('Winner: ') and (global_game_data.player_objects[3].distance_traveled != 0)):
+            #print("triggered")
+            self.winner_label.text = 'Winner:  ' + str(config_data.player_data[shortIndex][0])
+        Scoreboard.winnerCalculated = True
+        
+    def clear_winner(self):
+        self.winner_label.text = 'Winner:  '
+
     def update_scoreboard(self):
         self.update_elements_locations()
         self.update_paths()
         self.update_distance_to_exit()
         self.update_distance_traveled()
+        self.update_winner()
+            

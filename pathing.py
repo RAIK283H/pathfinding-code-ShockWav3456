@@ -77,12 +77,6 @@ def get_random_path():
     return path
     return [1,2]
 
-#DFS(u)
-    #for each neighbor v of u
-    #   if v is unvisited, tree edge, DFS(v)
-    #   else if v is explored, bidirectional/back edge
-    #   else if v is visited, forward/cross edge
-
 def dfs_to_target(objIndex, graph, stack):
     assert(graph is not None), "Graph is None"
     assert(objIndex >= 0 and objIndex < len(graph)), "Target index is not a valid index"
@@ -170,11 +164,106 @@ def get_dfs_path():
 
     assert (pathStartToEnd is not None), "Path cannot be None."
     assert (len(pathStartToEnd) > 0), "Path cannot be empty."
+    assert targetIndex in pathStartToEnd
+    assert pathStartToEnd[len(pathStartToEnd) - 1] == endIndex
+    for i in range(len(pathStartToEnd) - 1):
+        assert pathStartToEnd[i + 1] in graph[pathStartToEnd[i]][1]
+    
     return pathStartToEnd
     return [1,2]
 
+def bfs_to_target(objIndex, graph, stack):
+    assert(graph is not None), "Graph is None"
+    assert(objIndex >= 0 and objIndex < len(graph)), "Target index is not a valid index"
+    assert(stack is not None), "Stack cannot be None"
+    parent = [-1] * len(graph)
+    visited = list()
+    objIndexFound = False
+    currentIndex = -1
+    while(stack and not objIndexFound):
+        # (1): Pop Node
+        currentIndex = stack.pop()
+
+        # (2): if curr node not in visited, mark it visited
+        if(currentIndex not in visited):
+            visited.append(currentIndex)
+            if(currentIndex == objIndex):
+                objIndexFound = True
+            else:
+                # (3): Update unvisited neighbors
+                for neighbor in graph[currentIndex][1]:
+                    if(neighbor not in visited):
+                        # (4): Push unvisited neighbors to stack
+                        stack.insert(0, neighbor)
+                        if(parent[neighbor] == -1):
+                            parent[neighbor] = currentIndex
+
+    if(objIndexFound):
+        path = list()
+        while(currentIndex != -1):
+            path.append(currentIndex)
+            currentIndex = parent[currentIndex]
+        path.reverse()
+        return path
+    
+    return None
 
 def get_bfs_path():
+    #print("\BFS has activated")
+    assert (global_game_data.current_graph_index is not None), "Current graph index cannot be None."
+    assert (graph_data_file.graph_data is not None), "Graph_data cannot be None."
+    graphIndex = global_game_data.current_graph_index
+    assert (graph_data_file.graph_data[global_game_data.current_graph_index] is not None), "Graph_data at graph index cannot be None."
+    graph = graph_data_file.graph_data[graphIndex]
+
+    #Intializing and declaring objective variables
+    targetIndex = global_game_data.target_node[graphIndex]
+    endIndex = len(graph) - 1
+
+    #Intializing and declaring variable for Path
+    pathStartToEnd = list()
+
+    #Start to Target DFS Path
+
+    #Intializing Stack for Start to Target BFS
+    stack = [0]
+    pathsToTarget = bfs_to_target(targetIndex, graph, stack)
+    
+    
+
+    #Transferring path into one path
+    assert(pathsToTarget is not None), "Path from start to target is None"
+    assert (len(pathsToTarget) > 0), "Path from start to target cannot be empty."
+    for x in range(1, len(pathsToTarget)):
+        pathStartToEnd.append(pathsToTarget[x])
+
+
+    #Target To End
+
+    #Intializing Stack for Target to End BFS
+    stack.clear
+    stack = [targetIndex]
+
+    #Target to End BFS Path
+    pathTargetToEnd = bfs_to_target(endIndex, graph, stack)
+
+    #Transferring the pathTargetToEnd to pathStartToEnd
+    assert(pathTargetToEnd is not None), "Path from target to end is None"
+    assert (len(pathTargetToEnd) > 0), "Path from target to end cannot be empty."
+    for x in range(1, len(pathTargetToEnd)):
+        pathStartToEnd.append(pathTargetToEnd[x])
+ 
+
+
+
+    assert (pathStartToEnd is not None), "Path cannot be None."
+    assert (len(pathStartToEnd) > 0), "Path cannot be empty."
+    assert targetIndex in pathStartToEnd
+    assert pathStartToEnd[len(pathStartToEnd) - 1] == endIndex
+    for i in range(len(pathStartToEnd) - 1):
+        assert pathStartToEnd[i + 1] in graph[pathStartToEnd[i]][1]
+
+    return pathStartToEnd
     return [1,2]
 
 
