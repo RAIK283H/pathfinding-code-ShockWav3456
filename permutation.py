@@ -62,6 +62,7 @@ def getLargestMobileInt(nodeArray, movementArray):
 def permutationGenerator(lengthOfArray):
     assert(lengthOfArray is not None), "Permutation Generator failed: lengthOfArray was None"
     assert(lengthOfArray > 0), "Permutation Generator failed: lengthOfArray was less than 1"
+    lengthOfArray -= 2
 
     # The list that will hold all the permutations
     permutations = []
@@ -75,7 +76,7 @@ def permutationGenerator(lengthOfArray):
 
     #filling the nodeArray with the correct values
     for i in range(lengthOfArray):
-        nodeArray[i] = i
+        nodeArray[i] = i + 1
     
     #Puts the intial state of nodeArray into the permutations list
     permutations.append(nodeArray.copy())
@@ -99,7 +100,7 @@ def permutationGenerator(lengthOfArray):
         if(mobileIntIndex is not None):
             #Don't need to check if the index for indexToSwapWith is valid, beacuse it is handled within the getlargestMobileInt method
             indexToSwapWith = mobileIntIndex - 1 if movementArray[mobileIntIndex] else mobileIntIndex + 1
-            print(f"mobileIntIndex: {mobileIntIndex} | indexToSwapWith: {indexToSwapWith}")
+            #print(f"mobileIntIndex: {mobileIntIndex} indexToSwapWith: {indexToSwapWith}")
             
             #Swapping the indexs at mobileIntIndex and indexToSwapWith in nodeArray
             swap(nodeArray, mobileIntIndex, indexToSwapWith)
@@ -109,6 +110,8 @@ def permutationGenerator(lengthOfArray):
             #Switching the direction of all integers with values greater than mobile integer
             
             for i in range(lengthOfArray):
+                #print(f"i: {i}, indexToSwapWith: {indexToSwapWith}")
+                #print(nodeArray)
                 if(nodeArray[i] > nodeArray[indexToSwapWith]):
                     movementArray[i] = not movementArray[i]
 
