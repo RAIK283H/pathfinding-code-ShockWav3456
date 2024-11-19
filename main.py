@@ -96,7 +96,7 @@ def change_graph():
     graph.set_up_graph()
     pathing.set_current_graph_paths()
     scoreboard.clear_winner()
-    getHamiltonianCycles()
+    #getHamiltonianCycles()
 
 
 if __name__ == '__main__':

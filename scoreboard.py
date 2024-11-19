@@ -141,7 +141,7 @@ class Scoreboard:
                     if(distance < shortestpath):
                         shortIndex = x
                         shortestpath = distance
-        if(len(self.winner_label.text) == len('Winner: ') and (global_game_data.player_objects[3].distance_traveled != 0)):
+        if(len(self.winner_label.text) == len('Winner: ') and (global_game_data.player_objects[len(global_game_data.player_objects) - 1].distance_traveled != 0)):
             #print("triggered")
             self.winner_label.text = 'Winner:  ' + str(config_data.player_data[shortIndex][0])
         Scoreboard.winnerCalculated = True
