@@ -342,8 +342,6 @@ def dijkstra_to_target(objIndex, graph, nodes, dijkstraHeap):
             # (3): Update unvisited neighbors
             for neighbor in currentNode.getAdjacent():
                 if(neighbor not in solved):
-                    # do nothing
-                else:
                     cost = get_cost(currentNode, nodes[neighbor])
                     if(neighbor not in seenNotSolved):
                         seenNotSolved.append(neighbor)
@@ -354,6 +352,7 @@ def dijkstra_to_target(objIndex, graph, nodes, dijkstraHeap):
                         if(nodes[neighbor].setCost(cost)):
                             parent[neighbor] = currentIndex
                             update_priority(dijkstraHeap, oldCost, cost, neighbor)
+                    
 
 
 
@@ -394,7 +393,7 @@ def get_dijkstra_path():
     heapStartToTarget = []
     heap.heapify(heapStartToTarget)
     nodes[0].setCost(0)
-
+    heap.heappush(heapStartToTarget, (nodes[0].getCost(), 0))
     pathsToTarget = dijkstra_to_target(targetIndex, graph, nodes, heapStartToTarget)
     #print(pathsToTarget)
     
