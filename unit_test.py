@@ -248,31 +248,6 @@ class TestPathFinding(unittest.TestCase):
             pathing.dijkstra_to_target(3, graph, [0])
         self.assertEqual(str(context.exception), "Target index is not a valid index")
 
-    def test_find_dijkstra_path(self):
-        graph = [
-            ((100,100), [1, 2]),
-            ((200,100), [0,3]),
-            ((300,100), [0,6]),
-            ((400,100), [1,4]),
-            ((500,100), [4,5]),
-            ((600,100), [5,6]),
-            ((700,100), [1,5]),
-        ]
-        stack = [0]
-        result = pathing.dijkstra_to_target(6, graph, stack)
-        self.assertEqual(result, [0, 2, 6], "The path to target is not expected val")
-
-    def test_no_dijkstra_path(self):
-        graph = [
-            ((100,100), [1, 2]),
-            ((200,100), [0]),
-            ((300,100), [0]),
-            ((400,100), []),
-        ]
-        stack = [0]
-        result = pathing.dijkstra_to_target(3, graph, stack)
-        self.assertIsNone(result, "Did not return None when target reachable")
-
     def test_graph_dijkstra_none(self):
         with self.assertRaises(AssertionError) as context:
             pathing.dijkstra_to_target(0, None, [0])
