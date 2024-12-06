@@ -4,7 +4,7 @@ from numpy import random
 import sys
 import heapq
 import math
-
+import f_w
 
 #graph_data[a] = gives you graph at index a
 #graph_data[a][0] = start node of graph a
@@ -20,6 +20,7 @@ def set_current_graph_paths():
     global_game_data.graph_paths.append(get_dfs_path())
     global_game_data.graph_paths.append(get_bfs_path())
     global_game_data.graph_paths.append(get_dijkstra_path())
+    global_game_data.graph_paths.append(f_w.F_W.floyd_Warshall(global_game_data.target_node[global_game_data.current_graph_index]))
 
 
 def get_test_path():
@@ -365,8 +366,6 @@ def get_dijkstra_path():
     for x in range(1, len(pathTargetToEnd)):
         pathStartToEnd.append(pathTargetToEnd[x])
  
-
-    print(f"Start to end: {pathStartToEnd}")
     assert (pathStartToEnd is not None), "Path cannot be None."
     assert (len(pathStartToEnd) > 0), "Path cannot be empty."
     assert targetIndex in pathStartToEnd

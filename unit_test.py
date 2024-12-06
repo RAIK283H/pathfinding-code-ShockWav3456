@@ -2,6 +2,7 @@ import math
 import unittest
 import pathing
 import permutation
+import f_w
 
 
 class TestPathFinding(unittest.TestCase):
@@ -252,6 +253,37 @@ class TestPathFinding(unittest.TestCase):
         with self.assertRaises(AssertionError) as context:
             pathing.dijkstra_to_target(0, None, [0])
         self.assertEqual(str(context.exception), "Graph is None")
+
+    def test_invalid_F_W_target(self):
+        graph = [
+            ((100,100), [1]),
+            ((200,100), [0]),
+        ]
+        with self.assertRaises(AssertionError) as context:
+            distMatrix = f_w.F_W.graphToMatrix(graph)
+            parnMatrix = f_w.F_W.floyd_WarshallAlgorithm(distMatrix)
+            result = f_w.F_W.getPath(parnMatrix, 0, 3)
+        self.assertEqual(str(context.exception), "Target index is not a valid index")
+
+    def test_graph_F_W_none(self):
+        with self.assertRaises(AssertionError) as context:
+            distMatrix = f_w.F_W.graphToMatrix(None)
+        self.assertEqual(str(context.exception), "Graph is None")
+
+    def test_no_path_F_W_target(self):
+        result = list()
+        graph = [
+            ((100, 100), [1, 2]),  # Node 0 connected to nodes 1 and 2
+            ((200, 100), [0]),      # Node 1 connected to node 0
+            ((300, 100), [0]),      # Node 2 connected to node 0
+            ((400, 100), []),       # Node 3 is isolated (no neighbors)
+        ]
+        
+        with self.assertRaises(AssertionError) as context:
+            distMatrix = f_w.F_W.graphToMatrix(graph)
+            parnMatrix = f_w.F_W.floyd_WarshallAlgorithm(distMatrix)
+            result = f_w.F_W.getPath(parnMatrix, 0, len(graph) - 1)
+        self.assertEqual(str(context.exception), "Path to target is unreachable")
 
 
 if __name__ == '__main__':
